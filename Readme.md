@@ -20,11 +20,12 @@ in project directory:
 ```bash
 dotnet restore
 dotnet run
+dotnet watch run
 ```
 
 ## Open topics
 
-- log errors instead of sending them back
+
 - add bearer authentication
 
 ## Change history
