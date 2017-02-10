@@ -18,7 +18,8 @@
 		"Microsoft.Extensions.Logging.Console": "1.1.0",
 		"Microsoft.Extensions.Logging.Debug": "1.1.0",
 		"Microsoft.AspNetCore.Mvc": "1.1.1",
-		"Swashbuckle.AspNetCore": "1.0.0-rc1"
+		"Swashbuckle.AspNetCore": "1.0.0-rc1",
+		"MailKit": "1.10.2"
 	},
 	"tools": {
 		"Microsoft.AspNetCore.Server.IISIntegration.Tools": {

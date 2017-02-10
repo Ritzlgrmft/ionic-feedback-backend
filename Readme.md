@@ -25,10 +25,13 @@ dotnet watch run
 
 ## Open topics
 
-
+- create real mail
+- take recipient from settings
+- encrypt mail credentials
 - add bearer authentication
+- publish to azure
 
 ## Change history
 
-### 2.0.0
+### 1.0.0
 
