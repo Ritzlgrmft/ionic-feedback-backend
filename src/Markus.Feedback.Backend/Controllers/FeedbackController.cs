@@ -1,8 +1,12 @@
 using System;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
+using Markus.Feedback.Backend.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MimeKit;
 using Newtonsoft.Json;
 
@@ -12,10 +16,17 @@ namespace Markus.Feedback.Backend.Controllers
 	public class FeedbackController : Controller
 	{
 		private ILogger<FeedbackController> logger;
+		private MailConfiguration mailConfiguration;
+		private RegistrationConfiguration registrationConfiguration;
 
-		public FeedbackController(ILogger<FeedbackController> logger)
+		public FeedbackController(
+			ILogger<FeedbackController> logger,
+			IOptions<MailConfiguration> mailConfigurationAccessor,
+			IOptions<RegistrationConfiguration> registrationConfigurationAccessor)
 		{
 			this.logger = logger;
+			this.mailConfiguration = mailConfigurationAccessor.Value;
+			this.registrationConfiguration = registrationConfigurationAccessor.Value;
 		}
 
 		[HttpPost]
@@ -53,10 +64,32 @@ namespace Markus.Feedback.Backend.Controllers
 			return Ok();
 		}
 
+		// private AppConfiguration CheckAuthentication()
+		// {
+		// 	string authorization = Request.Headers["Authorization"];
+		// 	if (authorization != null && authorization.StartsWith("Basic"))
+		// 	{
+		// 		var encodedAppCredentials = authorization.Substring("Basic ".Length).Trim();
+		// 		var encoding = Encoding.GetEncoding("iso-8859-1");
+		// 		var appCredentials = encoding.GetString(Convert.FromBase64String(encodedAppCredentials)).Split(':');
+
+		// 		var app = this.registrationConfiguration.Apps.FirstOrDefault(
+		// 			a => a.AppKey == appCredentials[0] && a.AppSecret == appCredentials[1]
+		// 		);
+
+		// 		if (app == null)
+		// 		{
+		// 			throw new HttpResponseException()
+		// 		}
+		// 		var username = appCredentials.Substring(0, seperatorIndex);
+		// 		var password = appCredentials.Substring(seperatorIndex + 1);
+		// 	}
+		// }
+
 		private async Task SendMailAsync()
 		{
 			var message = new MimeMessage();
-			message.From.Add(new MailboxAddress("Feedback Backend", "feedback@markus.onmicrosoft.com"));
+			message.From.Add(new MailboxAddress(mailConfiguration.SenderName, mailConfiguration.SenderMail));
 			message.To.Add(new MailboxAddress("Markus", "me@markus.onmicrosoft.com"));
 			message.Subject = "Hello World - A mail from ASPNET Core";
 			var bodyBuilder = new BodyBuilder();
@@ -65,10 +98,10 @@ namespace Markus.Feedback.Backend.Controllers
 
 			using (var client = new SmtpClient())
 			{
-				await client.ConnectAsync("smtp.office365.com", 587, false);
+				await client.ConnectAsync(mailConfiguration.Server, mailConfiguration.Port, false);
 				// since we don't have an OAuth2 token, disable the XOAUTH2 authentication mechanism   
 				client.AuthenticationMechanisms.Remove("XOAUTH2");
-				await client.AuthenticateAsync("me@markus.onmicrosoft.com", "4SogineM");
+				await client.AuthenticateAsync(mailConfiguration.User, mailConfiguration.Password);
 				await client.SendAsync(message);
 				await client.DisconnectAsync(true);
 			}

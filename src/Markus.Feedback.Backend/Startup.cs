@@ -1,3 +1,4 @@
+using Markus.Feedback.Backend.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,10 @@ namespace Markus.Feedback.Backend
 			{
 				c.SwaggerDoc("v1", new Info { Title = "Markus.Feedback.Backend", Version = "v1" });
 			});
+
+			services.AddOptions();
+			services.Configure<MailConfiguration>(Configuration.GetSection("Mail"));
+			services.Configure<RegistrationConfiguration>(Configuration.GetSection("Registration"));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,9 +53,6 @@ namespace Markus.Feedback.Backend
 					name: "default",
 					template: "{controller=Home}/{action=Index}/{id?}");
 			});
-
-			// app.UseDefaultFiles();
-			// app.UseStaticFiles();
 
 			app.UseSwagger();
 			app.UseSwaggerUi(c =>
