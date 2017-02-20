@@ -25,6 +25,16 @@ namespace Markus.Feedback.Backend
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddMvc();
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsPolicy",
+					builder => builder
+					.WithOrigins("http://localhost:8100")
+					.WithHeaders("authorization", "content-type")
+					.AllowCredentials()
+					.WithMethods("POST")
+				);
+			});
 
 			services.AddSwaggerGen(c =>
 			{

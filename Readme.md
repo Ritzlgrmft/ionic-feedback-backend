@@ -25,9 +25,11 @@ dotnet watch run
 
 ## Open topics
 
+- add parameters for app info, device info and log messages
 - add screenshot as attachment
 - encrypt mail credentials
 - publish to azure
+- configure origins per app
 
 ## Change history
 

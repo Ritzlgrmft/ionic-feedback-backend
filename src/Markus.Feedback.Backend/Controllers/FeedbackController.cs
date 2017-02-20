@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using Markus.Feedback.Backend.Configuration;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,6 +32,7 @@ namespace Markus.Feedback.Backend.Controllers
 
 		[HttpPost]
 		[ActionName("Create")]
+		[EnableCors("CorsPolicy")]
 		public async Task<IActionResult> CreateAsync([FromBody]Models.Feedback feedback)
 		{
 			logger.LogDebug($"Create\t{JsonConvert.SerializeObject(feedback, Formatting.None)}");

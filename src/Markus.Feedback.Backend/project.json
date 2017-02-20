@@ -7,6 +7,7 @@
 		"Markus Wagner"
 	],
 	"dependencies": {
+		"Microsoft.AspNetCore.Cors": "1.1.0",
 		"Microsoft.AspNetCore.Diagnostics": "1.1.0",
 		"Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
 		"Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
