@@ -25,10 +25,8 @@ dotnet watch run
 
 ## Open topics
 
-- create real mail
-- take recipient from settings
+- add screenshot as attachment
 - encrypt mail credentials
-- add bearer authentication
 - publish to azure
 
 ## Change history

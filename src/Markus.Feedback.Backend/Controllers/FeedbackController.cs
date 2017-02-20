@@ -54,7 +54,14 @@ namespace Markus.Feedback.Backend.Controllers
 					return BadRequest();
 				}
 
-				await this.SendMailAsync();
+				var app = CheckAuthentication();
+				if (app == null)
+				{
+					logger.LogError("Create\tAuthentication missing");
+					return Unauthorized();
+				}
+
+				await this.SendMailAsync(app, feedback);
 			}
 			catch (Exception e)
 			{
@@ -64,36 +71,48 @@ namespace Markus.Feedback.Backend.Controllers
 			return Ok();
 		}
 
-		// private AppConfiguration CheckAuthentication()
-		// {
-		// 	string authorization = Request.Headers["Authorization"];
-		// 	if (authorization != null && authorization.StartsWith("Basic"))
-		// 	{
-		// 		var encodedAppCredentials = authorization.Substring("Basic ".Length).Trim();
-		// 		var encoding = Encoding.GetEncoding("iso-8859-1");
-		// 		var appCredentials = encoding.GetString(Convert.FromBase64String(encodedAppCredentials)).Split(':');
+		private AppConfiguration CheckAuthentication()
+		{
+			AppConfiguration app = null;
 
-		// 		var app = this.registrationConfiguration.Apps.FirstOrDefault(
-		// 			a => a.AppKey == appCredentials[0] && a.AppSecret == appCredentials[1]
-		// 		);
+			string authorization = Request.Headers["Authorization"];
+			if (authorization != null && authorization.StartsWith("Basic"))
+			{
+				var encodedAppCredentials = authorization.Substring("Basic ".Length).Trim();
+				var encoding = Encoding.GetEncoding("iso-8859-1");
+				var appCredentials = encoding.GetString(Convert.FromBase64String(encodedAppCredentials)).Split(':');
 
-		// 		if (app == null)
-		// 		{
-		// 			throw new HttpResponseException()
-		// 		}
-		// 		var username = appCredentials.Substring(0, seperatorIndex);
-		// 		var password = appCredentials.Substring(seperatorIndex + 1);
-		// 	}
-		// }
+				app = this.registrationConfiguration.Apps.FirstOrDefault(
+					a => a.AppKey == appCredentials[0] && a.AppSecret == appCredentials[1]
+				);
+			}
 
-		private async Task SendMailAsync()
+			return app;
+		}
+
+		private async Task SendMailAsync(AppConfiguration app, Models.Feedback feedback)
 		{
 			var message = new MimeMessage();
 			message.From.Add(new MailboxAddress(mailConfiguration.SenderName, mailConfiguration.SenderMail));
-			message.To.Add(new MailboxAddress("Markus", "me@markus.onmicrosoft.com"));
-			message.Subject = "Hello World - A mail from ASPNET Core";
+			message.To.Add(new MailboxAddress(app.RecipientName, app.RecipientMail));
+			message.Subject = $"Feedback from {app.AppName}";
+
 			var bodyBuilder = new BodyBuilder();
-			bodyBuilder.HtmlBody = @"<b>This is bold and this is <i>italic</i></b>";
+			bodyBuilder.HtmlBody = $"<p><b>Timestamp:</b> {feedback.Timestamp.ToString("o")}</p>";
+			if (!string.IsNullOrEmpty(feedback.Category))
+			{
+				message.Subject += $" - {feedback.Category}";
+				bodyBuilder.HtmlBody += $"<p><b>Category:</b> {feedback.Category}</p>";
+			}
+			if (!string.IsNullOrEmpty(feedback.Email))
+			{
+				bodyBuilder.HtmlBody += $"<p><b>Email:</b> {feedback.Email}</p>";
+			}
+			bodyBuilder.HtmlBody += $"<p>{feedback.Message}</p>";
+			if (!string.IsNullOrEmpty(feedback.Screenshot))
+			{
+				bodyBuilder.HtmlBody += $"<p><img src=\"{feedback.Screenshot}\"></p>";
+			}
 			message.Body = bodyBuilder.ToMessageBody();
 
 			using (var client = new SmtpClient())
