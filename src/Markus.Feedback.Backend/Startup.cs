@@ -29,7 +29,7 @@ namespace Markus.Feedback.Backend
 			{
 				options.AddPolicy("CorsPolicy",
 					builder => builder
-					.WithOrigins("http://localhost:8100")
+					.AllowAnyOrigin()
 					.WithHeaders("authorization", "content-type")
 					.AllowCredentials()
 					.WithMethods("POST")

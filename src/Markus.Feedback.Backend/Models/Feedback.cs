@@ -17,5 +17,12 @@ namespace Markus.Feedback.Backend.Models
 		public DeviceInfo DeviceInfo { get; set; }
 		public AppInfo AppInfo { get; set; }
 		public LogMessage[] LogMessages { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Timestamp}\t{Category}\t{Message}\t{Name}\t{Email}" +
+			$"\t{!string.IsNullOrEmpty(Screenshot)}\t{DeviceInfo != null}\t{AppInfo != null}" +
+			$"\t{LogMessages != null}";
+		}
 	}
 }

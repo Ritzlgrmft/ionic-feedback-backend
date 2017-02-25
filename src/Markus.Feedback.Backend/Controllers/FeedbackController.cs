@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using Newtonsoft.Json;
 
 namespace Markus.Feedback.Backend.Controllers
 {
@@ -35,7 +34,7 @@ namespace Markus.Feedback.Backend.Controllers
 		[EnableCors("CorsPolicy")]
 		public async Task<IActionResult> CreateAsync([FromBody]Models.Feedback feedback)
 		{
-			logger.LogDebug($"Create\t{JsonConvert.SerializeObject(feedback, Formatting.None)}");
+			logger.LogDebug($"Create\t{feedback.ToString()}");
 			try
 			{
 				if (feedback == null)
@@ -94,6 +93,7 @@ namespace Markus.Feedback.Backend.Controllers
 
 		private async Task SendMailAsync(AppConfiguration app, Models.Feedback feedback)
 		{
+			logger.LogDebug($"{feedback.Screenshot.Substring(0, 40)}");
 			var message = new MimeMessage();
 			message.From.Add(new MailboxAddress(mailConfiguration.SenderName, mailConfiguration.SenderMail));
 			message.To.Add(new MailboxAddress(app.RecipientName, app.RecipientMail));
@@ -111,6 +111,39 @@ namespace Markus.Feedback.Backend.Controllers
 				bodyBuilder.HtmlBody += $"<p><b>Email:</b> {feedback.Email}</p>";
 			}
 			bodyBuilder.HtmlBody += $"<p>{feedback.Message}</p>";
+			if (feedback.DeviceInfo != null)
+			{
+				bodyBuilder.HtmlBody += "<table><tr><th colspan=\"2\">Device Info</th></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>Manufacturer</th><td>{feedback.DeviceInfo.Manufacturer}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>Model</th><td>{feedback.DeviceInfo.Model}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>Uuid</th><td>{feedback.DeviceInfo.Uuid}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>Serial</th><td>{feedback.DeviceInfo.Serial}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>Platform</th><td>{feedback.DeviceInfo.Platform}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>Version</th><td>{feedback.DeviceInfo.Version}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>Cordova</th><td>{feedback.DeviceInfo.Cordova}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>IsVirtual</th><td>{feedback.DeviceInfo.IsVirtual}</td></tr>";
+				bodyBuilder.HtmlBody += "</table>";
+			}
+			if (feedback.AppInfo != null)
+			{
+				bodyBuilder.HtmlBody += "<table><tr><th colspan=\"2\">App Info</th></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>AppName</th><td>{feedback.AppInfo.AppName}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>PackageName</th><td>{feedback.AppInfo.PackageName}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>VersionCode</th><td>{feedback.AppInfo.VersionCode}</td></tr>";
+				bodyBuilder.HtmlBody += $"<tr><th>VersionNumber</th><td>{feedback.AppInfo.VersionNumber}</td></tr>";
+				bodyBuilder.HtmlBody += "</table>";
+			}
+			if (feedback.LogMessages != null)
+			{
+				bodyBuilder.HtmlBody += "<table><tr><th colspan=\"2\">Log Messages</th></tr>";
+				bodyBuilder.HtmlBody += "<tr><th>Timestamp</th><th>Level</th><th>Logger</th><th>Method Name</th><th>Message</th></tr>";
+				var blank = " ";
+				foreach (var logMessage in feedback.LogMessages)
+				{
+					bodyBuilder.HtmlBody += $"<tr><td>{logMessage.TimeStamp}</td><td>{logMessage.Level}</td><td>{logMessage.Logger}</td><td>{logMessage.MethodName}</td><td>{string.Join(blank, logMessage.Message)}</td></tr>";
+				}
+				bodyBuilder.HtmlBody += "</table>";
+			}
 			if (!string.IsNullOrEmpty(feedback.Screenshot))
 			{
 				bodyBuilder.HtmlBody += $"<p><img src=\"{feedback.Screenshot}\"></p>";

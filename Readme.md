@@ -25,7 +25,7 @@ dotnet watch run
 
 ## Open topics
 
-- add parameters for app info, device info and log messages
+- add app info, device info and log messages as attachment
 - add screenshot as attachment
 - encrypt mail credentials
 - publish to azure
