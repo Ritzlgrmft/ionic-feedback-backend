@@ -93,7 +93,7 @@ namespace Markus.Feedback.Backend.Controllers
 
 		private async Task SendMailAsync(AppConfiguration app, Models.Feedback feedback)
 		{
-			logger.LogDebug($"{feedback.Screenshot.Substring(0, 40)}");
+			logger.LogDebug($"{feedback.Screenshot?.Substring(0, 40)}");
 			var message = new MimeMessage();
 			message.From.Add(new MailboxAddress(mailConfiguration.SenderName, mailConfiguration.SenderMail));
 			message.To.Add(new MailboxAddress(app.RecipientName, app.RecipientMail));

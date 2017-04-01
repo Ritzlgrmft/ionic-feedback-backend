@@ -12,7 +12,8 @@ in solution directory:
 
 ```bash
 dotnet restore
-dotnet run --project src/Markus.Feedback.Backend/ --contentRoot src/Markus.Feedback.Backend/
+dotnet run --project Markus.Feedback.Backend/Markus.Feedback.Backend.csproj --contentRoot Markus.Feedback.Backend/
+dotnet run --project Markus.Feedback.Backend.ConsoleTest/Markus.Feedback.Backend.ConsoleTest.csproj
 ```
 
 in project directory:
@@ -34,4 +35,3 @@ dotnet watch run
 ## Change history
 
 ### 1.0.0
-

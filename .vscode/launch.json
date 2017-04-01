@@ -6,9 +6,9 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build",
-			"program": "${workspaceRoot}/src/Markus.Feedback.Backend/bin/Debug/netcoreapp1.1/Markus.Feedback.Backend.dll",
+			"program": "${workspaceRoot}/Markus.Feedback.Backend/bin/Debug/netcoreapp1.1/Markus.Feedback.Backend.dll",
 			"args": [],
-			"cwd": "${workspaceRoot}/src/Markus.Feedback.Backend",
+			"cwd": "${workspaceRoot}/Markus.Feedback.Backend",
 			"stopAtEntry": false,
 			"internalConsoleOptions": "openOnSessionStart",
 			"launchBrowser": {
@@ -36,7 +36,7 @@
 			"name": ".NET Core Attach",
 			"type": "coreclr",
 			"request": "attach",
-			"processId": "${command.pickProcess}"
+			"processId": "${command:pickProcess}"
 		}
 	]
 }
