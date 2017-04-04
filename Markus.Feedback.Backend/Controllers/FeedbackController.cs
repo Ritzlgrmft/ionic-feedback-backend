@@ -80,7 +80,7 @@ namespace Markus.Feedback.Backend.Controllers
 			if (authorization != null && authorization.StartsWith("Basic"))
 			{
 				var encodedAppCredentials = authorization.Substring("Basic ".Length).Trim();
-				var encoding = Encoding.GetEncoding("iso-8859-1");
+				var encoding = Encoding.UTF8;
 				var appCredentials = encoding.GetString(Convert.FromBase64String(encodedAppCredentials)).Split(':');
 
 				app = this.registrationConfiguration.Apps.FirstOrDefault(

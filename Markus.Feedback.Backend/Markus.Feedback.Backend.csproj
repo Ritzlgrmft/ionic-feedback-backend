@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <Description>Backend for ionic-feedback-sample</Description>
@@ -40,6 +40,10 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Markus.Feedback.Backend.Models\Markus.Feedback.Backend.Models.csproj" />
   </ItemGroup>
 
 </Project>
