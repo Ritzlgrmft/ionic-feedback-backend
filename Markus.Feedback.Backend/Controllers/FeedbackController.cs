@@ -93,7 +93,6 @@ namespace Markus.Feedback.Backend.Controllers
 
 		private async Task SendMailAsync(AppConfiguration app, Models.Feedback feedback)
 		{
-			logger.LogDebug($"{feedback.Screenshot?.Substring(0, 40)}");
 			var message = new MimeMessage();
 			message.From.Add(new MailboxAddress(mailConfiguration.SenderName, mailConfiguration.SenderMail));
 			message.To.Add(new MailboxAddress(app.RecipientName, app.RecipientMail));
@@ -113,36 +112,34 @@ namespace Markus.Feedback.Backend.Controllers
 			bodyBuilder.HtmlBody += $"<p>{feedback.Message}</p>";
 			if (feedback.DeviceInfo != null)
 			{
-				bodyBuilder.HtmlBody += "<table><tr><th colspan=\"2\">Device Info</th></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>Manufacturer</th><td>{feedback.DeviceInfo.Manufacturer}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>Model</th><td>{feedback.DeviceInfo.Model}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>Uuid</th><td>{feedback.DeviceInfo.Uuid}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>Serial</th><td>{feedback.DeviceInfo.Serial}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>Platform</th><td>{feedback.DeviceInfo.Platform}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>Version</th><td>{feedback.DeviceInfo.Version}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>Cordova</th><td>{feedback.DeviceInfo.Cordova}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>IsVirtual</th><td>{feedback.DeviceInfo.IsVirtual}</td></tr>";
-				bodyBuilder.HtmlBody += "</table>";
+				var deviceInfoAttachment =
+					$"Manufacturer\t{feedback.DeviceInfo.Manufacturer}\n" +
+					$"Model\t{feedback.DeviceInfo.Model}\n" +
+					$"Uuid\t{feedback.DeviceInfo.Uuid}\n" +
+					$"Serial\t{feedback.DeviceInfo.Serial}\n" +
+					$"Platform\t{feedback.DeviceInfo.Platform}\n" +
+					$"Version\t{feedback.DeviceInfo.Version}\n" +
+					$"Cordova\t{feedback.DeviceInfo.Cordova}\n" +
+					$"IsVirtual\t{feedback.DeviceInfo.IsVirtual}\n";
+				bodyBuilder.Attachments.Add("deviceInfo.txt", Encoding.UTF8.GetBytes(deviceInfoAttachment), new ContentType("text", "plain"));
 			}
 			if (feedback.AppInfo != null)
 			{
-				bodyBuilder.HtmlBody += "<table><tr><th colspan=\"2\">App Info</th></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>AppName</th><td>{feedback.AppInfo.AppName}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>PackageName</th><td>{feedback.AppInfo.PackageName}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>VersionCode</th><td>{feedback.AppInfo.VersionCode}</td></tr>";
-				bodyBuilder.HtmlBody += $"<tr><th>VersionNumber</th><td>{feedback.AppInfo.VersionNumber}</td></tr>";
-				bodyBuilder.HtmlBody += "</table>";
+				var appInfoAttachment =
+					$"AppName\t{feedback.AppInfo.AppName}\n" +
+					$"PackageName\t{feedback.AppInfo.PackageName}\n" +
+					$"VersionCode\t{feedback.AppInfo.VersionCode}\n" +
+					$"VersionNumber\t{feedback.AppInfo.VersionNumber}\n";
+				bodyBuilder.Attachments.Add("appInfo.txt", Encoding.UTF8.GetBytes(appInfoAttachment), new ContentType("text", "plain"));
 			}
 			if (feedback.LogMessages != null)
 			{
-				bodyBuilder.HtmlBody += "<table><tr><th colspan=\"2\">Log Messages</th></tr>";
-				bodyBuilder.HtmlBody += "<tr><th>Timestamp</th><th>Level</th><th>Logger</th><th>Method Name</th><th>Message</th></tr>";
-				var blank = " ";
+				var logMessagesAttachment = "Timestamp\tLevel\tLogger\tMethod Name\tMessage\n";
 				foreach (var logMessage in feedback.LogMessages)
 				{
-					bodyBuilder.HtmlBody += $"<tr><td>{logMessage.TimeStamp}</td><td>{logMessage.Level}</td><td>{logMessage.Logger}</td><td>{logMessage.MethodName}</td><td>{string.Join(blank, logMessage.Message)}</td></tr>";
+					logMessagesAttachment += $"{logMessage.TimeStamp}\t{logMessage.Level}\t{logMessage.Logger}\t{logMessage.MethodName}\t{string.Join("\t", logMessage.Message)}\n";
 				}
-				bodyBuilder.HtmlBody += "</table>";
+				bodyBuilder.Attachments.Add("logMessages.txt", Encoding.UTF8.GetBytes(logMessagesAttachment), new ContentType("text", "plain"));
 			}
 			if (!string.IsNullOrEmpty(feedback.Screenshot))
 			{

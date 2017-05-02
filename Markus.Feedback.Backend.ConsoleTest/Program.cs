@@ -24,6 +24,24 @@ namespace Markus.Feedback.Backend.ConsoleTest
 				var appCredentials = encoding.GetBytes("94f4e317-a8ef-4ece-92ff-9e0d9398b5eb:307726c0-f677-4918-beb5-01ca6fce80ea");
 				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(appCredentials));
 
+				var appInfo = new AppInfo
+				{
+					AppName = "appName",
+					PackageName = "packageName",
+					VersionCode = "versionCode",
+					VersionNumber = "versionNumber"
+				};
+				var deviceInfo = new DeviceInfo
+				{
+					Cordova = "cordova",
+					Model = "model",
+					Platform = "platform",
+					Uuid = "uuid",
+					Version = "version",
+					Manufacturer = "manufacturer",
+					IsVirtual = false,
+					Serial = "serial"
+				};
 				var logMessages = new List<LogMessage>();
 				for (var i = 0; i < 10; i++)
 				{
@@ -43,7 +61,9 @@ namespace Markus.Feedback.Backend.ConsoleTest
 					Message = "myMessage",
 					Name = "myName",
 					Email = "my@email.de",
-					LogMessages = logMessages.ToArray()
+					AppInfo = appInfo,
+					DeviceInfo = deviceInfo,
+					LogMessages = logMessages.ToArray(),
 				};
 
 				var content = new StringContent(JsonConvert.SerializeObject(feedback), Encoding.UTF8, "application/json");
