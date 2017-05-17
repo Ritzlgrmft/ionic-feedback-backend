@@ -46,4 +46,7 @@
     <ProjectReference Include="..\Markus.Feedback.Backend.Models\Markus.Feedback.Backend.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Settings\" />
+  </ItemGroup>
 </Project>
