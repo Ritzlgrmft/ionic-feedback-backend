@@ -67,7 +67,7 @@ namespace Markus.Feedback.Backend
             });
 
             app.UseSwagger();
-            app.UseSwaggerUi(c =>
+            app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Markus.Feedback.Backend V1");
             });
