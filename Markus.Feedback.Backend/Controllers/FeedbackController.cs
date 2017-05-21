@@ -29,13 +29,6 @@ namespace Markus.Feedback.Backend.Controllers
             this.registrationConfiguration = registrationConfigurationAccessor.Value;
         }
 
-        [HttpGet]
-        [ActionName("MailConfiguration")]
-        public ActionResult GetMailConfiguration()
-        {
-            return Ok(this.mailConfiguration);
-        }
-
         [HttpPost]
         [ActionName("Create")]
         [EnableCors("CorsPolicy")]
