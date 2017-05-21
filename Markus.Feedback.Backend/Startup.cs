@@ -12,13 +12,19 @@ namespace Markus.Feedback.Backend
     {
         public Startup(IHostingEnvironment env)
         {
-            Configuration = new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("Settings/logging.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("Settings/mail.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("Settings/registration.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+                .AddJsonFile("Settings/registration.json", optional: true, reloadOnChange: true);
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+            else
+            {
+                builder.AddEnvironmentVariables();
+            }
+            Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
