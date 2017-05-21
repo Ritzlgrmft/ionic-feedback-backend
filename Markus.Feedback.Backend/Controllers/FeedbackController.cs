@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,6 +63,12 @@ namespace Markus.Feedback.Backend.Controllers
                     return Unauthorized();
                 }
 
+                if (!CheckThreshold(app))
+                {
+                    logger.LogError("Create\tThreshold reached");
+                    return new StatusCodeResult(429); // Too Many Requests
+                }
+
                 await this.SendMailAsync(app, feedback);
             }
             catch (Exception e)
@@ -89,6 +96,26 @@ namespace Markus.Feedback.Backend.Controllers
             }
 
             return app;
+        }
+
+        class LastCall
+        {
+            public string AppName { get; set; }
+            public DateTime Timestamp { get; set; }
+        }
+        private static List<LastCall> lastCalls = new List<LastCall>();
+
+        /// <summary>
+        /// Checks the threshold.
+        /// </summary>
+        /// <returns><c>true</c>, if the number of service calls in the last hour was below the threshold,
+        /// <c>false</c> otherwise.</returns>
+        /// <param name="app">App.</param>
+        private bool CheckThreshold(AppConfiguration app)
+        {
+            var callsInLastHour = lastCalls.Count(lc => lc.AppName == app.AppName && lc.Timestamp >= DateTime.Now.AddHours(-1));
+            lastCalls.Add(new LastCall { AppName = app.AppName, Timestamp = DateTime.Now });
+            return callsInLastHour < app.CallsPerHour;
         }
 
         private async Task SendMailAsync(AppConfiguration app, Models.Feedback feedback)

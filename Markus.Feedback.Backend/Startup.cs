@@ -14,8 +14,7 @@ namespace Markus.Feedback.Backend
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("Settings/logging.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("Settings/registration.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appSettings.json", optional: true, reloadOnChange: true);
             if (env.IsDevelopment())
             {
                 builder.AddUserSecrets<Startup>();
