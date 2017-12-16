@@ -76,7 +76,7 @@ namespace Markus.Feedback.Backend.Controllers
                 logger.LogError($"Create\t{e}");
                 return BadRequest();
             }
-            return Ok();
+            return NoContent();
         }
 
         private AppConfiguration CheckAuthentication()
